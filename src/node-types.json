@@ -220,11 +220,6 @@
     }
   },
   {
-    "type": "id",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "liblit",
     "named": true,
     "fields": {},
@@ -728,6 +723,10 @@
   },
   {
     "type": "hexnum",
+    "named": true
+  },
+  {
+    "type": "id",
     "named": true
   },
   {

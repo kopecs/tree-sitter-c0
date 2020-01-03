@@ -2,12 +2,42 @@ module.exports = grammar ({
     name: 'C0',
 
     rules: {
+        prog: $ => repeat(choice(
+            $.gdecl,
+            $.gdefn
+        )),
+
+        gdecl: $ => choice(
+            seq("struct", $.sid, ";"),
+            seq("#use", $.liblit, "\n"),
+            seq("#use", $.strlit, "\n"),
+            seq($.tp, $.vid, "(", optional(seq($.tp, $.vid, repeat(seq(",", $.tp, $.vid)))), ")", repeat($.anno), ";")
+        ),
+
+        gdefn: $ => choice(
+            seq("struct", $.sid, "{", repeat(seq($.tp, $.fid, ";")), "}", ";"),
+            seq("typedef", $.tp, $.aid),
+            seq($.tp, $.vid, "(", optional(seq($.tp, $.vid, repeat(seq(",", $.tp, $.vid)))), ")", repeat($.anno), "{", repeat($.stmt), "}")
+        ),
+
+        tp: $ => choice(
+            "int",
+            "bool",
+            "string",
+            "char",
+            "void",
+            seq($.tp, "*"),
+            seq($.tp, "[", "]"),
+            seq("struct", $.sid),
+            $.aid
+        ),
+
         id: $ => /[A-Za-z_][A-Za-z0-9_]*/,
 
-        sid: $ => $.id,
+        sid: $ => prec(20, $.id),
         fid: $ => $.id,
-        vid: $ => $.id,
-        aid: $ => $.id,
+        vid: $ => prec(20, $.id),
+        aid: $ => prec(10, $.id),
         
 
         num: $ => choice(
@@ -115,27 +145,7 @@ module.exports = grammar ({
             "--",
             "++"
         ),
-
-        prog: $ => repeat(choice(
-            $.gdecl,
-            $.gdefn
-        )),
-
-        gdecl: $ => choice(
-            seq("struct", $.sid, ";"),
-            seq($.tp, $.vid, "(", optional(seq($.tp, $.vid, repeat(seq(",", $.tp, $.vid)))), ")", ";"),
-            seq("#use", $.liblit, "\n"),
-            seq("#use", $.strlit, "\n"),
-            seq($.tp, $.vid, "(", optional(seq($.tp, $.vid, repeat(seq(",", $.tp, $.vid)))), ")", repeat($.anno), ";")
-        ),
-
-        gdefn: $ => choice(
-            seq("struct", $.sid, "{", repeat(seq($.tp, $.fid, ";")), "}", ";"),
-            seq($.tp, $.vid, "(", optional(seq($.tp, $.vid, repeat(seq(",", $.tp, $.vid)))), ")", "{", repeat($.stmt), "}"),
-            seq("typedef", $.tp, $.aid),
-            seq($.tp, $.vid, "(", optional(seq($.tp, $.vid, repeat(seq(",", $.tp, $.vid)))), ")", repeat($.anno), "{", repeat($.stmt), "}")
-        ),
-        
+ 
         stmt: $ => choice(
             seq($.simple, ";"),
             seq("if", "(", $.exp, ")", $.stmt, optional(seq("else", $.stmt))),
@@ -157,26 +167,14 @@ module.exports = grammar ({
             seq($.tp, $.vid, optional(seq("=", $.exp))),
         ),
 
-        lv: $ => choice(
+        lv: $ => prec(10, choice(
             $.vid,
             seq($.lv, ".", $.fid),
             seq($.lv, "->", $.fid),
             seq("*", $.lv),
             seq($.lv, optional($.exp)),
             seq("(", $.lv, ")")
-        ),
-
-        tp: $ => choice(
-            "int",
-            "bool",
-            "string",
-            "char",
-            "void",
-            seq($.tp, "*"),
-            seq($.tp, "[", "]"),
-            seq("struct", $.sid),
-            $.aid
-        ),
+        )),
 
         exp: $ => choice(
             seq("(", $.exp, ")"),
