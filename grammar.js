@@ -97,7 +97,6 @@ module.exports = grammar({
     ),
 
     _declarator: $ => choice(
-      $.pointer_declarator,
       $.function_declarator,
       $.array_declarator,
       $.parenthesized_declarator,
@@ -105,7 +104,6 @@ module.exports = grammar({
     ),
 
     _field_declarator: $ => choice(
-      alias($.pointer_field_declarator, $.pointer_declarator),
       alias($.function_field_declarator, $.function_declarator),
       alias($.array_field_declarator, $.array_declarator),
       alias($.parenthesized_field_declarator, $.parenthesized_declarator),
@@ -113,7 +111,6 @@ module.exports = grammar({
     ),
 
     _type_declarator: $ => choice(
-      alias($.pointer_type_declarator, $.pointer_declarator),
       alias($.function_type_declarator, $.function_declarator),
       alias($.array_type_declarator, $.array_declarator),
       alias($.parenthesized_type_declarator, $.parenthesized_declarator),
@@ -121,7 +118,6 @@ module.exports = grammar({
     ),
 
     _abstract_declarator: $ => choice(
-      $.abstract_pointer_declarator,
       $.abstract_function_declarator,
       $.abstract_array_declarator,
       $.abstract_parenthesized_declarator,
@@ -147,22 +143,6 @@ module.exports = grammar({
       $._abstract_declarator,
       ')'
     )),
-
-    pointer_declarator: $ => prec.dynamic(1, prec.right(seq(
-      '*',
-      field('declarator', $._declarator)
-    ))),
-    pointer_field_declarator: $ => prec.dynamic(1, prec.right(seq(
-      '*',
-      field('declarator', $._field_declarator)
-    ))),
-    pointer_type_declarator: $ => prec.dynamic(1, prec.right(seq(
-      '*',
-      field('declarator', $._type_declarator)
-    ))),
-    abstract_pointer_declarator: $ => prec.dynamic(1, prec.right(seq('*',
-      field('declarator', optional($._abstract_declarator))
-    ))),
 
     function_declarator: $ => prec(1, seq(
       field('declarator', $._declarator),
@@ -222,6 +202,7 @@ module.exports = grammar({
       $.struct_specifier,
       $.primitive_type,
       $.array_type,
+      $.pointer_type,
       $._type_identifier
     ),
 
@@ -232,6 +213,11 @@ module.exports = grammar({
       'string',
       'void',
     )),
+
+    pointer_type: $ => seq(
+        $._type_specifier,
+        '*'
+    ),
 
     array_type: $ => seq(
         $._type_specifier,
@@ -516,12 +502,14 @@ module.exports = grammar({
       const hex = /[0-9a-fA-F]/;
       const decimal = /[0-9]/;
       const hexDigits = repeat1(hex);
-      const decimalDigits = repeat1(decimal);
+      const decimalDigits = choice(
+          '0',
+          seq(/[1-9]/, repeat(decimal)),
+      );
       return token(seq(
-        optional('0x'),
         choice(
           decimalDigits,
-          seq('0x', hexDigits)
+          seq(choice('0x', '0X'), hexDigits)
         )
       ))
     },

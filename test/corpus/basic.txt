@@ -13,3 +13,61 @@ int main() {
   (function_declarator (identifier) (parameter_list))
   (compound_statement
     (return_statement (number_literal)))))
+
+===============================================================================
+simple assignment
+===============================================================================
+
+int main() {
+    int i = 5;
+    char c = 'c';
+    string s = "hello";
+    return 0;
+}
+
+---
+
+(translation_unit (function_definition
+  (primitive_type)
+  (function_declarator (identifier) (parameter_list))
+  (compound_statement
+    (declaration (primitive_type) (init_declarator (identifier) (number_literal)))
+    (declaration (primitive_type) (init_declarator (identifier) (char_literal)))
+    (declaration (primitive_type) (init_declarator (identifier) (string_literal)))
+    (return_statement (number_literal)))))
+
+===============================================================================
+allocate and assign
+===============================================================================
+
+int main() {
+    int* i = alloc(int);
+    int** j = alloc(int*);
+    string[] s_arr = alloc_array(string, 0xF);
+    return 0;
+}
+
+---
+
+(translation_unit (function_definition
+  (primitive_type)
+  (function_declarator (identifier) (parameter_list))
+  (compound_statement
+    (declaration 
+      (pointer_type (primitive_type))
+      (init_declarator 
+        (identifier)
+        (alloc_expression (primitive_type))))
+    (declaration
+      (pointer_type (pointer_type (primitive_type)))
+      (init_declarator 
+        (identifier)
+        (alloc_expression (pointer_type (primitive_type)))))
+    (declaration
+      (array_type (primitive_type))
+      (init_declarator 
+        (identifier)
+        (alloc_array_expression
+          (primitive_type)
+          (number_literal))))
+    (return_statement (number_literal)))))
