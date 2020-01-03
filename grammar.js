@@ -213,7 +213,7 @@ module.exports = grammar({
     init_declarator: $ => seq(
       field('declarator', $._declarator),
       '=',
-      field('value', choice($.initializer_list, $._expression))
+      field('value', $._expression)
     ),
 
     compound_statement: $ => seq(
@@ -352,7 +352,6 @@ module.exports = grammar({
       $.subscript_expression,
       $.call_expression,
       $.field_expression,
-      $.compound_literal_expression,
       $.identifier,
       $.number_literal,
       $.string_literal,
@@ -483,34 +482,10 @@ module.exports = grammar({
       field('field', $._field_identifier)
     ),
 
-    compound_literal_expression: $ => seq(
-      '(',
-      field('type', $.type_descriptor),
-      ')',
-      field('value', $.initializer_list)
-    ),
-
     parenthesized_expression: $ => seq(
       '(',
       $._expression,
       ')'
-    ),
-
-    initializer_list: $ => seq(
-      '{',
-      commaSep(choice(
-        $.initializer_pair,
-        $._expression,
-        $.initializer_list
-      )),
-      optional(','),
-      '}'
-    ),
-
-    initializer_pair: $ => seq(
-      field('designator', repeat1(choice($.subscript_designator, $.field_designator))),
-      '=',
-      field('value', choice($._expression, $.initializer_list))
     ),
 
     subscript_designator: $ => seq('[', $._expression, ']'),
@@ -556,7 +531,14 @@ module.exports = grammar({
 
     escape_sequence: $ => token(prec(1, seq(
       '\\',
-      /\d{2,3}/,
+      choice(
+        '0',
+        'r',
+        'n',
+        'v',
+        'f',
+        't'
+      )
     ))),
 
     system_lib_string: $ => token(seq(
