@@ -374,16 +374,16 @@ module.exports = grammar({
     alloc_expression: $ => seq(
       "alloc",
       "(",
-      $.type,
+      $._type_specifier,
       ")"
     ),
 
     alloc_array_expression: $ => seq(
       "alloc_array",
       "(",
-      $.type,
+      $._type_specifier,
       ",",
-      $._expression
+      $._expression,
       ")"
     ),
 
