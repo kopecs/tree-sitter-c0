@@ -225,6 +225,7 @@ module.exports = grammar({
     _type_specifier: $ => choice(
       $.struct_specifier,
       $.primitive_type,
+      $.array_type,
       $._type_identifier
     ),
 
@@ -236,6 +237,11 @@ module.exports = grammar({
       'void',
     )),
 
+    array_type: $ => seq(
+        $._type_specifier,
+        "[",
+        "]"
+    ),
 
     struct_specifier: $ => seq(
       'struct',
