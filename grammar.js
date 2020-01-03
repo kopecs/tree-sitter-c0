@@ -557,7 +557,8 @@ module.exports = grammar({
         'n',
         'v',
         'f',
-        't'
+        't',
+        'b'
       )
     ))),
 
