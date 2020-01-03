@@ -52,6 +52,14 @@
     "named": true,
     "subtypes": [
       {
+        "type": "alloc_array_expression",
+        "named": true
+      },
+      {
+        "type": "alloc_expression",
+        "named": true
+      },
+      {
         "type": "assignment_expression",
         "named": true
       },
@@ -216,6 +224,10 @@
     "named": true,
     "subtypes": [
       {
+        "type": "array_type",
+        "named": true
+      },
+      {
         "type": "primitive_type",
         "named": true
       },
@@ -317,6 +329,40 @@
     }
   },
   {
+    "type": "alloc_array_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "_expression",
+          "named": true
+        },
+        {
+          "type": "_type_specifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "alloc_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "_type_specifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "argument_list",
     "named": true,
     "fields": {},
@@ -367,6 +413,21 @@
           }
         ]
       }
+    }
+  },
+  {
+    "type": "array_type",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "_type_specifier",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -651,7 +712,7 @@
     "named": true,
     "fields": {
       "declarator": {
-        "multiple": true,
+        "multiple": false,
         "required": true,
         "types": [
           {
@@ -1221,7 +1282,7 @@
     "named": true,
     "fields": {
       "declarator": {
-        "multiple": true,
+        "multiple": false,
         "required": true,
         "types": [
           {
@@ -1552,6 +1613,14 @@
   },
   {
     "type": "^=",
+    "named": false
+  },
+  {
+    "type": "alloc",
+    "named": false
+  },
+  {
+    "type": "alloc_array",
     "named": false
   },
   {

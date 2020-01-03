@@ -69,13 +69,13 @@ module.exports = grammar({
     ),
 
     function_definition: $ => seq(
-      $._declaration_specifiers,
+      field('type', $._type_specifier),
       field('declarator', $._declarator),
       field('body', $.compound_statement)
     ),
 
     declaration: $ => seq(
-      $._declaration_specifiers,
+      field('type', $._type_specifier),
       field('declarator', choice(
         $._declarator,
         $.init_declarator
@@ -88,10 +88,6 @@ module.exports = grammar({
       field('type', $._type_specifier),
       field('declarator', $._type_declarator),
       ';'
-    ),
-
-    _declaration_specifiers: $ => seq(
-      field('type', $._type_specifier),
     ),
 
     declaration_list: $ => seq(
@@ -265,7 +261,7 @@ module.exports = grammar({
     ),
 
     field_declaration: $ => seq(
-      $._declaration_specifiers,
+      field('type', $._type_specifier),
       commaSep(field('declarator', $._field_declarator)),
       ';'
     ),
@@ -277,7 +273,7 @@ module.exports = grammar({
     ),
 
     parameter_declaration: $ => seq(
-      $._declaration_specifiers,
+      field('type', $._type_specifier),
       optional(field('declarator', choice(
         $._declarator,
         $._abstract_declarator
