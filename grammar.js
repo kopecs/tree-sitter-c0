@@ -1,3 +1,20 @@
+const PREC = {
+    ASSIGNMENT = 0,
+    TERNARY = 1,
+    LOGICAL_OR = 2,
+    LOGICAL_AND = 3,
+    BITWISE_OR = 4,
+    BITWISE_XOR = 5,
+    BITWISE_AND = 6,
+    EQUALITY = 7,
+    RELATIONAL = 8,
+    SHIFT = 9,
+    ADDITION = 10,
+    MULTIPLICATION = 11,
+    UNARY = 12,
+    SUBSCRIPT = 13
+};
+
 module.exports = grammar ({
     name: 'C0',
 
@@ -32,12 +49,55 @@ module.exports = grammar ({
             $.aid
         ),
 
+        exp: $ => choice(
+            seq("(", $.exp, ")"),
+            $.num,
+            $.strlit,
+            $.chrlit,
+            "true",
+            "false",
+            "NULL",
+            $.vid,
+            seq($.exp, $.binop, $.exp),
+            seq($.unop, $.exp),
+            seq($.exp, "?", $.exp, ":", $.exp),
+            seq($.vid, "(", optional(seq($.exp, repeat(seq(",", $.exp)))), ")"),
+            seq($.exp, ".", $.fid),
+            seq($.exp, "->", $.fid),
+            seq($.exp, "[", $.exp, "]"),
+            seq("alloc", "(", $.tp, ")"),
+            seq("alloc_array", "(", $.tp, $.exp, ")"),
+            "\\result",
+            seq("\\length", "(", $.exp, ")")
+        ),
+
+        stmt: $ => choice(
+            seq($.simple, ";"),
+            seq("if", "(", $.exp, ")", $.stmt, optional(seq("else", $.stmt))),
+            seq("while", "(", $.exp, ")", $.stmt),
+            seq("for", "(", optional($.simple), ";", $.exp, ";", optional($.simple), ")", $.stmt),
+            seq("return", optional($.exp), ";"),
+            seq("{", repeat($.stmt), "}"),
+            seq("assert", "(", $.exp, ")", ";"),
+            seq("error", "(", $.exp, ")", ";"),
+            seq(repeat1($.anno), $.stmt),
+            seq("{", repeat($.stmt), repeat1($.anno), "}")
+        ),
+
+        simple: $ => choice(
+            seq($.lv, $.asnop, $.exp),
+            seq($.lv, "++"),
+            seq($.lv, "--"),
+            $.exp,
+            seq($.tp, $.vid, optional(seq("=", $.exp))),
+        ),
+
         id: $ => /[A-Za-z_][A-Za-z0-9_]*/,
 
-        sid: $ => prec(20, $.id),
+        sid: $ => $.id,
         fid: $ => $.id,
-        vid: $ => prec(20, $.id),
-        aid: $ => prec(10, $.id),
+        vid: $ => $.id,
+        aid: $ => $.id,
         
 
         num: $ => choice(
@@ -146,57 +206,16 @@ module.exports = grammar ({
             "++"
         ),
  
-        stmt: $ => choice(
-            seq($.simple, ";"),
-            seq("if", "(", $.exp, ")", $.stmt, optional(seq("else", $.stmt))),
-            seq("while", "(", $.exp, ")", $.stmt),
-            seq("for", "(", optional($.simple), ";", $.exp, ";", optional($.simple), ")", $.stmt),
-            seq("return", optional($.exp), ";"),
-            seq("{", repeat($.stmt), "}"),
-            seq("assert", "(", $.exp, ")", ";"),
-            seq("error", "(", $.exp, ")", ";"),
-            seq(repeat1($.anno), $.stmt),
-            seq("{", repeat($.stmt), repeat1($.anno), "}")
-        ),
 
-        simple: $ => choice(
-            seq($.lv, $.asnop, $.exp),
-            seq($.lv, "++"),
-            seq($.lv, "--"),
-            $.exp,
-            seq($.tp, $.vid, optional(seq("=", $.exp))),
-        ),
-
-        lv: $ => prec(10, choice(
+        lv: $ => choice(
             $.vid,
             seq($.lv, ".", $.fid),
             seq($.lv, "->", $.fid),
+            seq($.lv, "[", $.exp, "]"),
             seq("*", $.lv),
-            seq($.lv, optional($.exp)),
             seq("(", $.lv, ")")
-        )),
-
-        exp: $ => choice(
-            seq("(", $.exp, ")"),
-            $.num,
-            $.strlit,
-            $.chrlit,
-            "true",
-            "false",
-            "NULL",
-            $.vid,
-            seq($.exp, $.binop, $.exp),
-            seq($.unop, $.exp),
-            seq($.exp, "?", $.exp, ":", $.exp),
-            seq($.vid, "(", optional(seq($.exp, repeat(seq(",", $.exp)))), ")"),
-            seq($.exp, ".", $.fid),
-            seq($.exp, "->", $.fid),
-            seq($.exp, "[", $.exp, "]"),
-            seq("alloc", "(", $.tp, ")"),
-            seq("alloc_array", "(", $.tp, $.exp, ")"),
-            "\\result",
-            seq("\\length", "(", $.exp, ")")
         ),
+
 
         spec: $ => choice(
             seq("requires", $.exp, ";"),
