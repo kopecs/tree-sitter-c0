@@ -1,0 +1,71 @@
+================================================================================
+accept decimal numeric literals
+================================================================================
+
+int main() {
+    int i = 5;
+    int j = 118561747812;
+    int k = -314172415;
+    return 0;
+}
+
+---
+
+(translation_unit (function_definition
+  (primitive_type)
+  (function_declarator (identifier) (parameter_list))
+  (compound_statement
+    (declaration (primitive_type) (init_declarator (identifier) (number_literal)))
+    (declaration (primitive_type) (init_declarator (identifier) (number_literal)))
+    (declaration (primitive_type) (init_declarator
+                                    (identifier)
+                                    (unary_expression (number_literal))))
+    (return_statement (number_literal)))))
+
+================================================================================
+accept hexadecimal numeric literals
+================================================================================
+
+int main() {
+    int i = 0xfaFFFaee71Fe;
+    int j = 0XFa2;
+    int k = -0xFAE2;
+    return 0;
+}
+
+---
+
+(translation_unit (function_definition
+  (primitive_type)
+  (function_declarator (identifier) (parameter_list))
+  (compound_statement
+    (declaration (primitive_type) (init_declarator (identifier) (number_literal)))
+    (declaration (primitive_type) (init_declarator (identifier) (number_literal)))
+    (declaration (primitive_type) (init_declarator
+                                    (identifier)
+                                    (unary_expression (number_literal))))
+    (return_statement (number_literal)))))
+
+================================================================================
+reject octal numeric literals
+================================================================================
+
+int main() {
+    int i = 0;
+    int j = 07;
+    int k = -04185;
+    return 0;
+}
+
+---
+
+(translation_unit (function_definition
+  (primitive_type)
+  (function_declarator (identifier) (parameter_list))
+  (compound_statement
+    (declaration (primitive_type) (init_declarator (identifier) (number_literal)))
+    (declaration (primitive_type) (init_declarator (identifier) (number_literal)) (ERROR (number_literal)))
+    (declaration (primitive_type) (init_declarator
+                                    (identifier)
+                                    (unary_expression (ERROR (number_literal)) (number_literal))))
+    (return_statement (number_literal)))))
