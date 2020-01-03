@@ -1282,6 +1282,7 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       if (lookahead == '\n') SKIP(16)
       if (lookahead == '\r') SKIP(1)
       if (lookahead == '0' ||
+          lookahead == 'b' ||
           lookahead == 'f' ||
           lookahead == 'n' ||
           lookahead == 'r' ||
@@ -1309,6 +1310,7 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       if (lookahead == '\n') SKIP(19)
       if (lookahead == '\r') SKIP(7)
       if (lookahead == '0' ||
+          lookahead == 'b' ||
           lookahead == 'f' ||
           lookahead == 'n' ||
           lookahead == 'r' ||
@@ -1332,6 +1334,7 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       if (lookahead == '\n') SKIP(25)
       if (lookahead == '\r') SKIP(10)
       if (lookahead == '0' ||
+          lookahead == 'b' ||
           lookahead == 'f' ||
           lookahead == 'n' ||
           lookahead == 'r' ||
@@ -1819,6 +1822,7 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
     case 101:
       ACCEPT_TOKEN(aux_sym_char_literal_token1);
       if (lookahead == '0' ||
+          lookahead == 'b' ||
           lookahead == 'f' ||
           lookahead == 'n' ||
           lookahead == 'r' ||

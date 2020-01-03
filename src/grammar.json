@@ -2899,6 +2899,10 @@
                 {
                   "type": "STRING",
                   "value": "t"
+                },
+                {
+                  "type": "STRING",
+                  "value": "b"
                 }
               ]
             }
