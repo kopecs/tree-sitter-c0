@@ -366,7 +366,25 @@ module.exports = grammar({
       $.null,
       $.concatenated_string,
       $.char_literal,
-      $.parenthesized_expression
+      $.parenthesized_expression,
+      $.alloc_expression,
+      $.alloc_array_expression
+    ),
+
+    alloc_expression: $ => seq(
+      "alloc",
+      "(",
+      $.type,
+      ")"
+    ),
+
+    alloc_array_expression: $ => seq(
+      "alloc_array",
+      "(",
+      $.type,
+      ",",
+      $._expression
+      ")"
     ),
 
     conditional_expression: $ => prec.right(PREC.CONDITIONAL, seq(
