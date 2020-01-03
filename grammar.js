@@ -119,13 +119,15 @@ module.exports = grammar ({
             seq("struct", $.sid, ";"),
             seq($.tp, $.vid, "(", optional(seq($.tp, $.vid, repeat(",", $.tp, $.vid))), ")", ";"),
             seq("#use", $.liblit, "\n"),
-            seq("#use", $.strlit, "\n")
+            seq("#use", $.strlit, "\n"),
+            seq($.tp, $.vid, "(", optional(seq($.tp, $.vid, repeat(",", $.tp, $.vid))), ")", repeat($.anno), ";")
         )
 
         gdefn: $ => choice(
             seq("struct", $.sid, "{", repeat($.tp, $.fid, ";"), "}", ";"),
             seq($.tp, $.vid, "(", optional(seq($.tp, $.vid, repeat(",", $.tp, $.vid))), ")", "{", repeat(stmt), "}"),
-            seq("typedef", $.tp, $.aid)
+            seq("typedef", $.tp, $.aid),
+            seq($.tp, $.vid, "(", optional(seq($.tp, $.vid, repeat(",", $.tp, $.vid))), ")", repeat($.anno) "{", repeat(stmt), "}")
         ),
         
         stmt: $ => choice(
@@ -136,7 +138,9 @@ module.exports = grammar ({
             seq("return", optional($.exp), ";"),
             seq("{", repeat($.stmt), "}"),
             seq("assert", "(", $.exp, ")", ";"),
-            seq("error", "(", $.exp, ")", ";")
+            seq("error", "(", $.exp, ")", ";"),
+            seq(repeat1($.anno), $.stmt),
+            seq("{", repeat($.stmt), repeat1($.anno), "}")
         ),
 
         simple: $ => choice(
@@ -185,7 +189,21 @@ module.exports = grammar ({
             seq($.exp, "->", $.fid),
             seq($.exp, "[", $.exp, "]"),
             seq("alloc", "(", $.tp, ")"),
-            seq("alloc_array", "(", $.tp, $.exp, ")")
+            seq("alloc_array", "(", $.tp, $.exp, ")"),
+            "\\result",
+            seq("\\length", "(", $.exp, ")")
+        ),
+
+        spec: $ => choice(
+            seq("requires", $.exp, ";"),
+            seq("ensures", $.exp, ";"),
+            seq("loop_invariant", $.exp, ";"),
+            seq("assert", $.exp, ";")
+        ),
+
+        anno: $ => choice(
+            seq("//@", repeat($.spec), "\n"),
+            seq("/*", repeat($.spec), "\n")
         ),
     }
 });
