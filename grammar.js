@@ -4,6 +4,12 @@ module.exports = grammar ({
     rules: {
         id: $ => /[A-Za-z_][A-Za-z0-9_]*/,
 
+        sid: $ => $.id,
+        fid: $ => $.id,
+        vid: $ => $.id,
+        aid: $ => $.id,
+        
+
         num: $ => choice(
             $.decnum,
             $.hexnum
@@ -14,7 +20,7 @@ module.exports = grammar ({
             /[1-9][0-9]*/
         ),
 
-        hexnum: $ => /0[xX][0-9a-fA-F]+/
+        hexnum: $ => /0[xX][0-9a-fA-F]+/,
 
         strlit: $ => seq("\"", repeat($.schar), "\""),
 
@@ -66,7 +72,7 @@ module.exports = grammar ({
             "~",
             "-",
             "*"
-        )
+        ),
 
         binop: $ => choice(
             ".",
@@ -117,17 +123,17 @@ module.exports = grammar ({
 
         gdecl: $ => choice(
             seq("struct", $.sid, ";"),
-            seq($.tp, $.vid, "(", optional(seq($.tp, $.vid, repeat(",", $.tp, $.vid))), ")", ";"),
+            seq($.tp, $.vid, "(", optional(seq($.tp, $.vid, repeat(seq(",", $.tp, $.vid)))), ")", ";"),
             seq("#use", $.liblit, "\n"),
             seq("#use", $.strlit, "\n"),
-            seq($.tp, $.vid, "(", optional(seq($.tp, $.vid, repeat(",", $.tp, $.vid))), ")", repeat($.anno), ";")
-        )
+            seq($.tp, $.vid, "(", optional(seq($.tp, $.vid, repeat(seq(",", $.tp, $.vid)))), ")", repeat($.anno), ";")
+        ),
 
         gdefn: $ => choice(
-            seq("struct", $.sid, "{", repeat($.tp, $.fid, ";"), "}", ";"),
-            seq($.tp, $.vid, "(", optional(seq($.tp, $.vid, repeat(",", $.tp, $.vid))), ")", "{", repeat(stmt), "}"),
+            seq("struct", $.sid, "{", repeat(seq($.tp, $.fid, ";")), "}", ";"),
+            seq($.tp, $.vid, "(", optional(seq($.tp, $.vid, repeat(seq(",", $.tp, $.vid)))), ")", "{", repeat($.stmt), "}"),
             seq("typedef", $.tp, $.aid),
-            seq($.tp, $.vid, "(", optional(seq($.tp, $.vid, repeat(",", $.tp, $.vid))), ")", repeat($.anno) "{", repeat(stmt), "}")
+            seq($.tp, $.vid, "(", optional(seq($.tp, $.vid, repeat(seq(",", $.tp, $.vid)))), ")", repeat($.anno), "{", repeat($.stmt), "}")
         ),
         
         stmt: $ => choice(
