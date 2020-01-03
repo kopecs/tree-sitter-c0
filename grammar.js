@@ -76,17 +76,17 @@ module.exports = grammar({
 
     declaration: $ => seq(
       $._declaration_specifiers,
-      commaSep1(field('declarator', choice(
+      field('declarator', choice(
         $._declarator,
         $.init_declarator
-      ))),
+      )),
       ';'
     ),
 
     type_definition: $ => seq(
       'typedef',
       field('type', $._type_specifier),
-      commaSep1(field('declarator', $._type_declarator)),
+      field('declarator', $._type_declarator),
       ';'
     ),
 
